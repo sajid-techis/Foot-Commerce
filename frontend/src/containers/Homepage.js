@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router";
-import ReactPaginate from "react-paginate";
 import Empty from "../components/default/Empty";
 import Footer from "../components/default/Footer";
 import Header from "../components/default/Header";
 import ProductListCard from "../components/homepage/ProductListCard";
-import { Female, Male, Kid } from "../constants";
+import { Female, Kid, Male } from "../constants";
 import { fetchCarts } from "../reducks/cart/operations";
 import { getCarts } from "../reducks/cart/selectors";
 import { fetchCategories } from "../reducks/category/operations";
@@ -35,21 +35,8 @@ export default function Homepage() {
   const [activeCategory, setActiveCategory] = useState(+queryCategoryId);
   const [search, setSearch] = useState(null);
   const [page, setPage] = useState(1);
+  const [title, setTitle] = useState("Products List");
 
-  const title = type
-    ? type === "male"
-      ? Male
-        ? "female"
-        : Female 
-      : Kid
-    : "Products List";
-  const defaultSelect = type
-    ? type === "male"
-      ? "male"
-        ? "female"
-        : "female"
-      : "kid"
-    : "FILTER BY GENDER";
   const isEmptyCategory =
     categories.results && categories.results.length > 0 ? false : true;
   const isEmptyProduct =
@@ -63,6 +50,23 @@ export default function Homepage() {
     setPage(e.selected + 1);
     window.scrollTo(0, 0);
   };
+
+  useEffect(() => {
+    switch (type) {
+      case "female":
+        setTitle(Female);
+        break;
+      case "male":
+        setTitle(Male);
+        break;
+      case "kid":
+        setTitle(Kid);
+        break;
+      default:
+        setTitle("Products List");
+        break;
+    }
+  }, [type]);
 
   useEffect(() => {
     dispatch(
@@ -102,8 +106,9 @@ export default function Homepage() {
           <div className="homepage-container">
             <div className="homepage-content">
               <select
-                defaultValue={defaultSelect}
-                onChange={(e) => setType(e.target.value)}
+                onChange={(e) => {
+                  setType(e.target.value);
+                }}
                 className="gender-select"
               >
                 <option value="">FILTER BY GENDER</option>
